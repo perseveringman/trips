@@ -1,0 +1,19 @@
+# Personal pointer (per-cwd active trip) — never commit
+.workbuddy/
+
+# Build outputs
+node_modules/
+dist/
+web/dist/
+web/public/trips/
+
+# OS junk
+.DS_Store
+**/.DS_Store
+
+# Editor
+.vscode/
+.idea/
+
+# Transient
+*.log
