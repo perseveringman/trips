@@ -85,40 +85,97 @@ def _read_recommendations(root: Path) -> list[dict]:
     return out
 
 
-def _parse_events(timeline_path: Path) -> list[dict]:
+def _parse_events(timeline_path: Path, entities: list[dict] | None = None) -> list[dict]:
     """Timeline is maintained by ingest.py as `- **YEAR** — summary` lines.
     We also pick up structured events when a JSON sidecar exists.
+
+    If `entities` is provided, we scan each event summary for entity ids and
+    aliases, then auto-populate `places` and `actors` so the front-end can
+    render clickable chips that jump to the entity drawer.
     """
     events_json = timeline_path.with_suffix(".json")
+    raw: list[dict] = []
     if events_json.exists():
         try:
-            return json.loads(events_json.read_text(encoding="utf-8"))
+            raw = json.loads(events_json.read_text(encoding="utf-8"))
         except Exception:
             pass
 
-    if not timeline_path.exists():
-        return []
+    if not raw:
+        if not timeline_path.exists():
+            return []
 
-    out = []
-    line_re = re.compile(r"^\s*-\s+\*\*([^*]+)\*\*\s*[—-]\s*(.+)$")
-    for line in timeline_path.read_text(encoding="utf-8").splitlines():
-        m = line_re.match(line)
-        if not m:
-            continue
-        year_str = m.group(1).strip()
-        summary = m.group(2).strip()
-        try:
-            year = int(year_str)
-        except ValueError:
-            year = None
-        out.append({
-            "id": summary[:40],
-            "year": year,
-            "summary": summary,
-            "places": [],
-            "actors": [],
-        })
-    return out
+        line_re = re.compile(r"^\s*-\s+\*\*([^*]+)\*\*\s*[—-]\s*(.+)$")
+        for line in timeline_path.read_text(encoding="utf-8").splitlines():
+            m = line_re.match(line)
+            if not m:
+                continue
+            year_str = m.group(1).strip()
+            summary = m.group(2).strip()
+            try:
+                year = int(year_str)
+            except ValueError:
+                year = None
+            raw.append({
+                "id": summary[:40],
+                "year": year,
+                "summary": summary,
+                "places": [],
+                "actors": [],
+            })
+
+    # If events already have populated places/actors, respect them.
+    # Otherwise auto-match entities against the summary text.
+    if entities:
+        PLACE_LIKE = {
+            "place", "city", "town", "village", "region", "district", "site",
+            "ruin", "temple", "church", "mosque", "shrine", "palace", "museum",
+            "gallery", "landmark", "monument", "tomb", "natural_feature",
+            "mountain", "river", "lake", "sea", "desert", "island", "park",
+        }
+        PERSON_LIKE = {"pharaoh", "person", "ruler", "figure", "deity"}
+
+        # Build lookup: all names → (entity_id, entity_type)
+        name_map: dict[str, tuple[str, str]] = {}
+        for e in entities:
+            eid = e["id"]
+            etype = (e.get("type") or "").lower()
+            for name in [eid] + list(e.get("aliases") or []):
+                if name and len(name) >= 2:
+                    name_map[name] = (eid, etype)
+
+        # Sort by length descending so longer names match before substrings
+        sorted_names = sorted(name_map.keys(), key=len, reverse=True)
+
+        for ev in raw:
+            # Skip if already populated
+            if ev.get("places") or ev.get("actors"):
+                continue
+            summary = ev.get("summary", "")
+            found_places: list[str] = []
+            found_actors: list[str] = []
+            seen_ids: set[str] = set()
+            for name in sorted_names:
+                if name in summary:
+                    eid, etype = name_map[name]
+                    if eid in seen_ids:
+                        continue
+                    seen_ids.add(eid)
+                    if etype in PERSON_LIKE:
+                        found_actors.append(eid)
+                    elif etype in PLACE_LIKE:
+                        found_places.append(eid)
+                    else:
+                        # concept / unknown: treat as place if it has coords
+                        e_obj = next((x for x in entities if x["id"] == eid), None)
+                        if e_obj and e_obj.get("coords"):
+                            found_places.append(eid)
+                        else:
+                            found_actors.append(eid)
+            ev["places"] = found_places
+            ev["actors"] = found_actors
+
+    return raw
 
 
 def main() -> int:
@@ -171,7 +228,7 @@ def main() -> int:
         "destination": dest,
         "countryHint": (read_json(p["state"]) or {}).get("country_hint"),
         "entities": entities,
-        "events": _parse_events(p["timeline"]),
+        "events": _parse_events(p["timeline"], entities),
         "sessionLog": _read_session_log(p["log"]),
         "recommendations": _read_recommendations(root),
         "generatedAt": now_iso(),

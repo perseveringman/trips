@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import type { TripStore } from "../store";
 import type { TripEvent } from "../lib/types";
+import { iconForType } from "../lib/constants";
 
 export default function Timeline({ useStore, isMobile }:
   { useStore: TripStore; isMobile: boolean }) {
   const events = useStore((s) => s.data.events);
   const selectedId = useStore((s) => s.selectedId);
   const setSelected = useStore((s) => s.setSelected);
+  const byId = useStore((s) => s.byId);
   const open = useStore((s) => s.timelineOpen);
   const setOpen = useStore((s) => s.setTimelineOpen);
   const [tall, setTall] = useState(false);
@@ -120,14 +122,40 @@ export default function Timeline({ useStore, isMobile }:
                 <span className="evt-detail-summary">{activeEvent.summary}</span>
                 <button className="evt-detail-close" onClick={() => setActiveEvt(null)}>×</button>
               </div>
-              <div className="evt-detail-links">
-                {activeEvent.places.map((p) => (
-                  <button key={p} className="evt-chip place" onClick={() => setSelected(p)}>📍 {p}</button>
-                ))}
-                {activeEvent.actors.map((a) => (
-                  <button key={a} className="evt-chip actor" onClick={() => setSelected(a)}>👤 {a}</button>
-                ))}
-              </div>
+              {(activeEvent.places.length > 0 || activeEvent.actors.length > 0) && (
+                <div className="evt-detail-links">
+                  {activeEvent.places.map((p) => {
+                    const entity = byId.get(p);
+                    const { emoji } = iconForType(entity?.type ?? "site");
+                    return (
+                      <button
+                        key={p}
+                        className={`evt-chip place${entity ? "" : " no-entity"}`}
+                        onClick={() => entity && setSelected(p)}
+                        title={entity ? entity.summary : p}
+                        style={!entity ? { cursor: "default", opacity: 0.5 } : {}}
+                      >
+                        {emoji} {p}
+                      </button>
+                    );
+                  })}
+                  {activeEvent.actors.map((a) => {
+                    const entity = byId.get(a);
+                    const { emoji } = iconForType(entity?.type ?? "person");
+                    return (
+                      <button
+                        key={a}
+                        className={`evt-chip actor${entity ? "" : " no-entity"}`}
+                        onClick={() => entity && setSelected(a)}
+                        title={entity ? entity.summary : a}
+                        style={!entity ? { cursor: "default", opacity: 0.5 } : {}}
+                      >
+                        {emoji} {a}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           )}
         </>
