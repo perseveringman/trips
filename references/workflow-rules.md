@@ -17,9 +17,10 @@
 3. （回答之后）执行 Track A 后台流程：
    a. 抽取实体 → ingest.py upsert
    b. geocode.py（如有新地点）
-   c. 生成推荐（如有新地点）
-   d. export_data.py
-   e. publish.py（git add + commit + push）
+   c. Unsplash 搜图（为新实体配图）
+   d. 生成推荐（如有新地点）
+   e. export_data.py
+   f. publish.py（git add + commit + push）
 ```
 
 ---
@@ -60,7 +61,35 @@ python3 scripts/publish.py --trip-root trips/<active-slug>
 
 ---
 
-## 规则 5：Commit message 格式
+## 规则 5：实体配图（Unsplash）
+
+每当新增或更新实体时，**必须通过 Unsplash 为实体搜索一张高质量配图**。
+
+### 搜图规则
+
+1. **搜索关键词**：使用实体的英文 alias（或 id 的英文翻译）作为搜索词，优先加上地理限定词。例如：
+   - 帝王谷 → `"Valley of the Kings Egypt"`
+   - 科什里 → `"Koshari Egyptian food"`
+   - 图坦卡蒙 → `"Tutankhamun mask"`
+
+2. **图片选择**：选择最能代表该实体的一张照片（优先选有辨识度的、构图好的）
+
+3. **存储位置**：图片 URL 写入实体 frontmatter 的 `image` 字段：
+   ```yaml
+   image: "https://images.unsplash.com/photo-xxxxx?w=800"
+   imageCredit: "Photo by Name on Unsplash"
+   imageSource: "unsplash"
+   ```
+
+4. **URL 格式**：使用 Unsplash 的 raw URL 并附加 `?w=800` 参数控制尺寸
+
+5. **归属声明**：必须记录摄影师署名到 `imageCredit` 字段
+
+6. **批量处理**：如果一轮对话新增多个实体，为每个实体都搜图
+
+---
+
+## 规则 6：Commit message 格式
 
 ```
 trip(<slug>): <简短描述本轮新增/变更了什么>
@@ -79,6 +108,7 @@ trip(<slug>): <简短描述本轮新增/变更了什么>
 - [ ] 追加 session-log ✅
 - [ ] 抽取新实体（如有）✅
 - [ ] 更新 wiki/entities/ ✅
+- [ ] Unsplash 搜图配图（新实体）✅
 - [ ] geocode 新地点 ✅
 - [ ] 生成推荐（如有新地点）✅
 - [ ] export_data.py 重建 trip.json ✅
@@ -86,4 +116,4 @@ trip(<slug>): <简短描述本轮新增/变更了什么>
 
 ---
 
-*最后更新：2026-04-30*
+*最后更新：2026-04-30T12:00+08:00*

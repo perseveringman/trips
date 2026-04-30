@@ -12,10 +12,12 @@
 
 4. **有新知识就抽取** — 涉及新地点/人物/美食/文化/行程变更时，必须执行实体抽取并更新 wiki。
 
-5. **详见 `.workbuddy/RULES.md`** — 完整规则和执行清单在那里。
+5. **Unsplash 实体配图** — 每个新增实体必须通过 Unsplash 搜索一张高质量配图，写入 entity frontmatter 的 `image`、`imageCredit`、`imageSource` 字段。搜索时使用英文 alias + 地理限定词。
+
+6. **详见 `references/workflow-rules.md`** — 完整规则和执行清单在那里。
 
 ## 工作流顺序
 
 ```
-用户消息 → 直接回答 → session-log → 抽取实体 → geocode → 推荐 → export_data → publish (push)
+用户消息 → 直接回答 → session-log → 抽取实体 → Unsplash搜图 → geocode → 推荐 → export_data → publish (push)
 ```
