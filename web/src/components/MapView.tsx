@@ -54,12 +54,14 @@ export default function MapView({ useStore, isMobile }:
       const size = isMobile ? 30 : 26;
       const icon = L.divIcon({
         className: "map-entity-icon",
-        html: `<span class="map-icon-inner" style="background:${color};border-color:${color}">${emoji}</span>`,
+        html: `<div class="map-marker-wrap">
+          <span class="map-icon-inner" style="background:${color};border-color:${color}">${emoji}</span>
+          <span class="map-label">${e.id}</span>
+        </div>`,
         iconSize: [size, size],
         iconAnchor: [size / 2, size / 2],
       });
       const marker = L.marker(e.coords, { icon });
-      marker.bindTooltip(e.id, { direction: "top", offset: [0, -size / 2] });
       marker.on("click", () => setSelected(e.id));
       marker.addTo(m);
       markersRef.current.set(e.id, marker);
