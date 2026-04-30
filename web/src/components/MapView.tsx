@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import L from "leaflet";
 import type { TripStore } from "../store";
 import type { Entity, LatLon } from "../lib/types";
-import { colorForType } from "../lib/constants";
+import { iconForType } from "../lib/constants";
 import { projectEntity, projectionBounds } from "../lib/anchors";
 
 // CartoDB Voyager — free, key-less, good travel base map. @2x for retina.
@@ -15,7 +15,7 @@ export default function MapView({ useStore, isMobile }:
   { useStore: TripStore; isMobile: boolean }) {
   const ref = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
-  const markersRef = useRef<Map<string, L.CircleMarker>>(new Map());
+  const markersRef = useRef<Map<string, L.Marker>>(new Map());
   const haloLayerRef = useRef<L.LayerGroup | null>(null);
 
   const data = useStore((s) => s.data);
@@ -50,12 +50,16 @@ export default function MapView({ useStore, isMobile }:
       Array.isArray(e.coords));
 
     for (const e of places) {
-      const marker = L.circleMarker(e.coords, {
-        radius: isMobile ? 9 : 7,
-        color: "#fff", weight: 2,
-        fillColor: colorForType(e.type), fillOpacity: 0.92,
+      const { emoji, color } = iconForType(e.type);
+      const size = isMobile ? 30 : 26;
+      const icon = L.divIcon({
+        className: "map-entity-icon",
+        html: `<span class="map-icon-inner" style="background:${color};border-color:${color}">${emoji}</span>`,
+        iconSize: [size, size],
+        iconAnchor: [size / 2, size / 2],
       });
-      marker.bindTooltip(e.id, { direction: "top", offset: [0, -6] });
+      const marker = L.marker(e.coords, { icon });
+      marker.bindTooltip(e.id, { direction: "top", offset: [0, -size / 2] });
       marker.on("click", () => setSelected(e.id));
       marker.addTo(m);
       markersRef.current.set(e.id, marker);
@@ -76,16 +80,18 @@ export default function MapView({ useStore, isMobile }:
     haloLayer.clearLayers();
     // reset marker styles
     for (const [id, mk] of markersRef.current) {
-      mk.setStyle({
-        weight: 2, color: "#fff", opacity: 1,
-        fillOpacity: selectedId ? 0.35 : 0.92,
-      });
+      const el = mk.getElement();
+      if (el) {
+        el.classList.remove("map-icon-selected", "map-icon-dimmed");
+        if (selectedId) el.classList.add("map-icon-dimmed");
+      }
       void id;
     }
 
     if (!selectedId) {
       for (const mk of markersRef.current.values()) {
-        mk.setStyle({ fillOpacity: 0.92 });
+        const el = mk.getElement();
+        if (el) el.classList.remove("map-icon-dimmed");
       }
       return;
     }
@@ -97,7 +103,11 @@ export default function MapView({ useStore, isMobile }:
 
     for (const [id, mk] of markersRef.current) {
       if (!anchorIds.has(id)) continue;
-      mk.setStyle({ fillOpacity: 1, weight: 3, color: "#c6652a" });
+      const el = mk.getElement();
+      if (el) {
+        el.classList.remove("map-icon-dimmed");
+        el.classList.add("map-icon-selected");
+      }
       const halo = L.circleMarker(mk.getLatLng(), {
         radius: isMobile ? 20 : 18,
         color: "#c6652a", weight: 2, opacity: 0.45,

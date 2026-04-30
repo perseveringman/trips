@@ -3,7 +3,7 @@ import cytoscape, { Core, ElementDefinition } from "cytoscape";
 import fcose from "cytoscape-fcose";
 import type { TripStore } from "../store";
 import type { Entity } from "../lib/types";
-import { colorForType } from "../lib/constants";
+import { colorForType, iconForType, emojiSvgUrl } from "../lib/constants";
 
 // Register layout once.
 let fcoseRegistered = false;
@@ -54,12 +54,16 @@ export default function GraphOverlay({ useStore, isMobile, graphVisible }:
   }, [data.entities, graphMode, selectedId, graphNeighborHops]);
 
   const elements: ElementDefinition[] = useMemo(() => {
-    const nodes: ElementDefinition[] = visibleEntities.map((e) => ({
-      data: {
-        id: e.id, label: e.id, type: e.type,
-        hasCoords: !!e.coords,
-      },
-    }));
+    const nodes: ElementDefinition[] = visibleEntities.map((e) => {
+      const { emoji, color } = iconForType(e.type);
+      return {
+        data: {
+          id: e.id, label: e.id, type: e.type,
+          hasCoords: !!e.coords,
+          bgImage: emojiSvgUrl(emoji, color, 64),
+        },
+      };
+    });
     const visible = new Set(visibleEntities.map((e) => e.id));
     const edges: ElementDefinition[] = [];
     const seen = new Set<string>();
@@ -87,21 +91,25 @@ export default function GraphOverlay({ useStore, isMobile, graphVisible }:
       // so we keep the canvas itself transparent.
       style: [
         { selector: "node", style: {
-          "background-color": (ele: any) => colorForType(ele.data("type")),
-          "background-opacity": 1,
+          "background-color": (ele: any) => iconForType(ele.data("type")).color,
+          "background-opacity": 0.15,
+          "background-image": "data(bgImage)",
+          "background-fit": "contain",
+          "background-clip": "none",
           "label": "data(label)",
           "font-size": isMobile ? 13 : 10,
           "color": "#1f1f1b",
           "text-valign": "bottom",
-          "text-margin-y": 3,
-          "text-outline-color": "#fafaf7",
-          "text-outline-width": isMobile ? 3 : 2,
-          "width": isMobile ? 22 : 16,
-          "height": isMobile ? 22 : 16,
-          "border-width": isMobile ? 2 : 1,
-          "border-color": isMobile ? "rgba(0,0,0,.25)" : "rgba(0,0,0,.15)",
+          "text-margin-y": 4,
+          "text-outline-color": "rgba(255,255,255,0.92)",
+          "text-outline-width": isMobile ? 4 : 3,
+          "width": isMobile ? 28 : 22,
+          "height": isMobile ? 28 : 22,
+          "border-width": isMobile ? 2 : 1.5,
+          "border-color": (ele: any) => iconForType(ele.data("type")).color,
+          "border-opacity": 0.5,
         } as any },
-        { selector: "node[?hasCoords]", style: { "border-color": "#c6652a", "border-width": isMobile ? 3 : 2 } },
+        { selector: "node[?hasCoords]", style: { "border-color": "#c6652a", "border-width": isMobile ? 3 : 2, "border-opacity": 1 } },
         { selector: "edge", style: {
           "width": isMobile ? 1.5 : 1,
           "line-color": isMobile ? "rgba(80,80,80,.35)" : "rgba(80,80,80,.22)",

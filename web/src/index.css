@@ -66,11 +66,13 @@ a:hover { text-decoration: underline; }
 }
 .map-layer { z-index: var(--z-map); }
 .graph-layer.overlay {
-  /* desktop overlay: bottom-right floating */
+  /* desktop overlay: bottom-right floating, semi-transparent */
   top: auto; left: auto;
   right: 12px; bottom: 12px;
   width: 320px; height: 320px;
-  background: var(--panel);
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border: 1px solid var(--border);
   border-radius: 12px;
   box-shadow: var(--shadow-lg);
@@ -87,9 +89,9 @@ a:hover { text-decoration: underline; }
 .graph-layer.mobile-overlay {
   position: absolute; inset: 0;
   z-index: var(--z-graph);
-  background: rgba(250,250,247,0.82);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
+  background: rgba(250,250,247,0.52);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   transition: opacity .2s ease;
   pointer-events: auto;
 }
@@ -503,6 +505,36 @@ a:hover { text-decoration: underline; }
 .leaflet-container { background: #f3efe6; outline: none; }
 .leaflet-popup-content { margin: 10px 12px; font-size: 13px; line-height: 1.5; }
 .leaflet-popup-content h4 { margin: 0 0 4px; }
+
+/* ── Map entity icon markers ── */
+.map-entity-icon {
+  background: transparent !important;
+  border: none !important;
+}
+.map-icon-inner {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  background-opacity: 0.15;
+  border: 2px solid;
+  font-size: 14px;
+  line-height: 1;
+  box-shadow: 0 1px 4px rgba(0,0,0,.18);
+  transition: transform .15s ease, opacity .15s ease;
+}
+@media (max-width: 768px) {
+  .map-icon-inner { font-size: 16px; }
+}
+.map-icon-dimmed .map-icon-inner {
+  opacity: 0.45;
+  transform: scale(0.85);
+}
+.map-icon-selected .map-icon-inner {
+  opacity: 1;
+  transform: scale(1.15);
+  box-shadow: 0 0 0 3px rgba(198,101,42,.35), 0 2px 6px rgba(0,0,0,.2);
+  border-color: #c6652a !important;
+}
 
 /* empty */
 .empty-root {
