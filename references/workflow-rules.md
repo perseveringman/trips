@@ -76,16 +76,92 @@ python3 scripts/publish.py --trip-root trips/<active-slug>
 
 3. **存储位置**：图片 URL 写入实体 frontmatter 的 `image` 字段：
    ```yaml
-   image: "https://images.unsplash.com/photo-xxxxx?w=800"
+   image: "https://images.unsplash.com/photo-xxxxx?w=800&q=80"
    imageCredit: "Photo by Name on Unsplash"
-   imageSource: "unsplash"
+   imageSource: unsplash
    ```
 
-4. **URL 格式**：使用 Unsplash 的 raw URL 并附加 `?w=800` 参数控制尺寸
+4. **URL 格式**：使用 Unsplash 的 raw URL 并附加 `?w=800&q=80` 参数控制尺寸和质量
 
 5. **归属声明**：必须记录摄影师署名到 `imageCredit` 字段
 
 6. **批量处理**：如果一轮对话新增多个实体，为每个实体都搜图
+
+### ⚠️ Unsplash 搜图踩坑记录（强制遵守）
+
+以下是实际操作中遇到的问题和解决方案，**必须按此执行**：
+
+#### 坑 1：Unsplash API 需要有效的 Client-ID
+
+- **现象**：直接调用 `api.unsplash.com` 返回 `401 Unauthorized`
+- **原因**：需要注册 Unsplash Developer 应用获取 Access Key
+- **解决方案**：不依赖 API，改用 **WebSearch 搜索 + 直链验证** 的方式：
+  1. 用 WebSearch 搜索 `site:unsplash.com {英文关键词}`
+  2. 从搜索结果中获取 Unsplash 图片页面
+  3. 构造 `https://images.unsplash.com/photo-{ID}?w=800&q=80` 格式 URL
+  4. 用 HEAD 请求验证 URL 可访问（200）
+
+#### 坑 2：Unsplash 网页有反爬 bot 验证
+
+- **现象**：WebFetch 直接抓取 `unsplash.com/s/photos/xxx` 返回验证页面（Anubis）
+- **解决方案**：**不要用 WebFetch 抓 Unsplash 网页**。改用以下方法：
+  - 直接构造 `images.unsplash.com/photo-{ID}` URL（CDN 无反爬）
+  - 通过 WebSearch 间接获取图片 ID
+  - 使用已知有效的 Unsplash photo ID 库
+
+#### 坑 3：随意编造 photo ID 大概率 404
+
+- **现象**：凭记忆或推测构造的 `photo-xxxx` URL 约 30-40% 会 404
+- **解决方案**：**必须逐个 HEAD 请求验证**。流程：
+  ```python
+  req = urllib.request.Request(url, method='HEAD')
+  req.add_header('User-Agent', 'Mozilla/5.0')
+  resp = urllib.request.urlopen(req, timeout=8)
+  # 只有 status==200 才写入 entity
+  ```
+  对于 404 的，更换备选 ID 重试。
+
+#### 坑 4：同类实体可复用相关图片
+
+- **策略**：对于没有独立照片的实体（如特定法老、历史人物），可以使用其**关联地点**的照片：
+  - 法老 → 用其陵墓/神庙的照片
+  - 历史人物 → 用其建造的建筑照片
+  - 抽象概念（如"热气球"）→ 用该活动的场景照片
+
+#### 坑 5：`site:unsplash.com` 搜索不一定返回 Unsplash 结果
+
+- **现象**：搜索引擎结果可能不包含 Unsplash 页面
+- **解决方案**：维护一份**已验证的 Unsplash photo ID 参考库**（按主题分类），优先从库中取用：
+
+```
+# 埃及相关已验证 photo ID（2026-04-30 验证通过）
+金字塔/吉萨:    photo-1503177119275-0aa32b3a9368 (Simon Berger)
+狮身人面像:     photo-1539650116574-8efeb43e2750 (Fynn Schmidt)
+卢克索/神庙:    photo-1565967511849-76a60a516170 (Spencer Davis)
+卡尔纳克:       photo-1599423300746-b62533397364 (Fynn Schmidt)
+帝王谷/陵墓:    photo-1553913861-c0fddf2619ee (Jeremy Zero)
+开罗:           photo-1572252009286-268acec5ca0a (Omar Elsharawy)
+开罗清真寺:     photo-1560611588-163f295eb145 (Omar Elsharawy)
+赫尔格达/红海:  photo-1544551763-46a013bb70d5 (Sebastian Pena Lambarri)
+热气球:         photo-1545156521-77bd85671d30 (Ian Dooley)
+帆船/尼罗河:    photo-1547471080-7cc2caa01a7e (Simon Berger)
+沙滩/海岛:      photo-1507525428034-b723cf961d3e (Sean Oulashin)
+图坦卡蒙:       photo-1594322436404-5a0526db4d13 (Robert Bhatt)
+丹德拉/古迹:    photo-1562979314-bee7453e911c (Fynn Schmidt)
+博物馆/室内:    photo-1569230919100-d3fd5e1132f4 (Fynn Schmidt)
+```
+
+#### 最佳实践总结
+
+```
+1. 优先从"已验证 ID 库"中选取匹配图片
+2. 库中没有 → WebSearch 搜索关键词获取新 photo ID
+3. 构造 URL: https://images.unsplash.com/photo-{ID}?w=800&q=80
+4. HEAD 请求验证 200
+5. 404 → 换备选/用关联实体图片
+6. 写入 entity frontmatter (image / imageCredit / imageSource)
+7. 新发现的有效 ID 追加到参考库（供后续使用）
+```
 
 ---
 
@@ -116,4 +192,4 @@ trip(<slug>): <简短描述本轮新增/变更了什么>
 
 ---
 
-*最后更新：2026-04-30T12:00+08:00*
+*最后更新：2026-04-30T12:30+08:00*
