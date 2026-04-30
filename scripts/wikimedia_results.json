@@ -1,0 +1,116 @@
+[
+  {
+    "entity": "丹德拉神庙",
+    "status": "success",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Dendera_Temple.jpg/960px-Dendera_Temple.jpg",
+    "credit": "Bernard Gagnon / Wikimedia Commons / CC BY-SA 3.0"
+  },
+  {
+    "entity": "克利奥帕特拉七世",
+    "status": "success",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/AncientEgypt-StatueFragment-CleopatraVII-ROM.png/960px-AncientEgypt-StatueFragment-CleopatraVII-ROM.png",
+    "credit": "Keith Schengili-Roberts / Wikimedia Commons / CC BY-SA 3.0"
+  },
+  {
+    "entity": "卡夫拉",
+    "status": "success",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Khafra.jpg/960px-Khafra.jpg",
+    "credit": "Juan R. Lazaro / Wikimedia Commons / CC BY 2.0"
+  },
+  {
+    "entity": "卡尔纳克神庙",
+    "status": "success",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Karnak_Khonsu_Temple_R01.jpg/960px-Karnak_Khonsu_Temple_R01.jpg",
+    "credit": "Marc Ryckaert (MJJR) / Wikimedia Commons / CC BY 3.0"
+  },
+  {
+    "entity": "卢克索",
+    "status": "success",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Luxor_Temple_R04.jpg/960px-Luxor_Temple_R04.jpg",
+    "credit": "Marc Ryckaert / Wikimedia Commons / CC BY 3.0"
+  },
+  {
+    "entity": "哈布城",
+    "status": "success",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Medinet-Temple-Column-Detail4.jpg/960px-Medinet-Temple-Column-Detail4.jpg",
+    "credit": "Steven C. Price / Wikimedia Commons / CC BY-SA 3.0"
+  },
+  {
+    "entity": "哈特谢普苏特",
+    "status": "success",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Temple_of_Hatshepsut%2C_Deir_el-Bahari%2C_Luxor%2C_Egypt.jpg/960px-Temple_of_Hatshepsut%2C_Deir_el-Bahari%2C_Luxor%2C_Egypt.jpg",
+    "credit": "Vyacheslav Argenberg / Wikimedia Commons / CC BY 4.0"
+  },
+  {
+    "entity": "大埃及博物馆",
+    "status": "success",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Grand_Egyptian_Museum%2C_Giza%2C_GG%2C_EGY_%2846986503535%29.jpg/960px-Grand_Egyptian_Museum%2C_Giza%2C_GG%2C_EGY_%2846986503535%29.jpg",
+    "credit": "Warren LeMay from Chicago, IL, United States / Wikimedia Commons / CC0"
+  },
+  {
+    "entity": "尼罗河落日帆船",
+    "status": "success",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Felucca_R08.jpg/960px-Felucca_R08.jpg",
+    "credit": "Marc Ryckaert / Wikimedia Commons / CC BY-SA 4.0"
+  },
+  {
+    "entity": "帝王谷",
+    "status": "success",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Egypt_banner_Tomb_entrance_in_valley_of_the_kings.jpg/960px-Egypt_banner_Tomb_entrance_in_valley_of_the_kings.jpg",
+    "credit": "Kam691 / Wikimedia Commons / CC0"
+  },
+  {
+    "entity": "拉美西斯三世",
+    "status": "success",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Thebes%2C_Medinet_Habu%2C_Egypt%2C_Temple_of_Ramesses_III%2C_Ancient_Egypt%2C_Guards_2.jpg/960px-Thebes%2C_Medinet_Habu%2C_Egypt%2C_Temple_of_Ramesses_III%2C_Ancient_Egypt%2C_Guards_2.jpg",
+    "credit": "Vyacheslav Argenberg / Wikimedia Commons / CC BY 4.0"
+  },
+  {
+    "entity": "拉美西斯二世",
+    "status": "success",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Templo_de_Nefertari%2C_Abu_Simbel%2C_Egipto%2C_2022-04-02%2C_DD_153.jpg/960px-Templo_de_Nefertari%2C_Abu_Simbel%2C_Egipto%2C_2022-04-02%2C_DD_153.jpg",
+    "credit": "Diego Delso / Wikimedia Commons / CC BY-SA 4.0"
+  },
+  {
+    "entity": "洞穴教堂",
+    "status": "success",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Egypt_and_Syria_%28microform%29_-_their_physical_features_in_relation_to_Bible_history_%28IA_cihm_04209%29.pdf/page1-500px-Egypt_and_Syria_%28microform%29_-_their_physical_features_in_relation_to_Bible_history_%28IA_cihm_04209%29.pdf.jpg",
+    "credit": "Dawson, J. W. (John William), Sir, 1820-1899 / Wikimedia Commons / Public domain"
+  },
+  {
+    "entity": "狮身人面像",
+    "status": "success",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/c/c5/Egypt.Giza.Sphinx.01.jpg",
+    "credit": "en:User:Hajor / Wikimedia Commons / CC BY-SA 3.0"
+  },
+  {
+    "entity": "穆罕默德·阿里",
+    "status": "success",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Cairo%2C_Cairo_Citadel%2C_Muhammad_Ali_Mosque%2C_Egypt.jpg/960px-Cairo%2C_Cairo_Citadel%2C_Muhammad_Ali_Mosque%2C_Egypt.jpg",
+    "credit": "Vyacheslav Argenberg / Wikimedia Commons / CC BY 4.0"
+  },
+  {
+    "entity": "萨拉丁",
+    "status": "success",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/b/ba/Guy_Lusignan_Saladin_Jan_Lievens.jpg",
+    "credit": "Jan Kentink / Wikimedia Commons / CC BY-SA 3.0"
+  },
+  {
+    "entity": "萨拉丁城堡",
+    "status": "success",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Flickr_-_HuTect_ShOts_-_Citadel_of_Salah_El.Din_and_Masjid_Muhammad_Ali_%D9%82%D9%84%D8%B9%D8%A9_%D8%B5%D9%84%D8%A7%D8%AD_%D8%A7%D9%84%D8%AF%D9%8A%D9%86_%D8%A7%D9%84%D8%A3%D9%8A%D9%88%D8%A8%D9%8A_%D9%88%D9%85%D8%B3%D8%AC%D8%AF_%D9%85%D8%AD%D9%85%D8%AF_%D8%B9%D9%84%D9%8A_-_Cairo_-_Egypt_-_17_04_2010_%284%29.jpg/960px-thumbnail.jpg",
+    "credit": "Ahmed Al.Badawy from Cairo, Egypt / Wikimedia Commons / CC BY-SA 2.0"
+  },
+  {
+    "entity": "门农巨像",
+    "status": "success",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Colosos_de_Memn%C3%B3n%2C_Luxor%2C_Egipto%2C_2022-04-03%2C_DD_132.jpg/960px-Colosos_de_Memn%C3%B3n%2C_Luxor%2C_Egipto%2C_2022-04-03%2C_DD_132.jpg",
+    "credit": "Diego Delso / Wikimedia Commons / CC BY-SA 4.0"
+  },
+  {
+    "entity": "阿蒙霍特普三世",
+    "status": "success",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Amenhotep_III_statue_in_Egyptian_Museum_of_Cairo_Egypt.jpg/960px-Amenhotep_III_statue_in_Egyptian_Museum_of_Cairo_Egypt.jpg",
+    "credit": "Tim Adams / Wikimedia Commons / CC BY 3.0"
+  }
+]
