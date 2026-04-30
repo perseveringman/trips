@@ -1,0 +1,21 @@
+# Project Instructions
+
+> 本文件由 agent 自动读取，强制约束每轮对话行为。
+
+## 核心规则（不可覆盖）
+
+1. **先回答用户，后做数据处理** — 用户提问时先给出完整、有价值的回答，再执行后台的实体抽取、wiki更新、数据导出等工作。绝不让用户等待技术流程。
+
+2. **每轮对话必须 git push** — 无论对话内容是什么，完成处理后必须执行 `python3 scripts/publish.py --trip-root trips/<active-slug>`，将变更推送到远端，触发 Vercel 重新部署。
+
+3. **Session log 持续记录** — 每轮 user+assistant 消息追加到 `.trip/session-log.jsonl`。
+
+4. **有新知识就抽取** — 涉及新地点/人物/美食/文化/行程变更时，必须执行实体抽取并更新 wiki。
+
+5. **详见 `.workbuddy/RULES.md`** — 完整规则和执行清单在那里。
+
+## 工作流顺序
+
+```
+用户消息 → 直接回答 → session-log → 抽取实体 → geocode → 推荐 → export_data → publish (push)
+```
