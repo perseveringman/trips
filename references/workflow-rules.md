@@ -177,7 +177,21 @@ python3 scripts/publish.py --trip-root trips/<active-slug>
 博物馆/室内:    photo-1569230919100-d3fd5e1132f4 (Fynn Schmidt)
 ```
 
-#### 最佳实践总结
+#### 最佳实践总结（推荐路径：Wikimedia Commons）
+
+**首选方案：Wikimedia Commons API**（无需认证、内容描述完整、CC 许可清晰）
+
+```
+1. 调用 commons.wikimedia.org/w/api.php 搜索
+   - generator=search, gsrnamespace=6 (File), prop=imageinfo
+   - iiprop=url|extmetadata|size, iiurlwidth=800
+2. 从 extmetadata 读取 ImageDescription 验证内容匹配
+3. HEAD 验证 thumburl 可达 (200)
+4. 写入 entity: image=thumburl, imageCredit="作者 / Wikimedia Commons / 许可证"
+5. imageSource 填 descriptionurl（Commons 文件页链接）
+```
+
+**备选方案：Unsplash**（如果有 API key）
 
 ```
 1. WebSearch 搜索 "unsplash.com {实体英文名}" 获取真实图片页
