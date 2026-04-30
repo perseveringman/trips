@@ -5,3 +5,5 @@
 {"t": "2026-04-30T12:16:03.479476+08:00", "role": "assistant", "text": "已将 Unsplash 实体配图规则写入 .codebuddy 和 references/workflow-rules.md。新增实体时必须用英文alias搜索Unsplash配图，写入image/imageCredit/imageSource字段。"}
 {"t": "2026-04-30T12:21:51.106730+08:00", "role": "user", "text": "现在历史时间轴对于埃及的描述太少了，补充一些关键事件"}
 {"t": "2026-04-30T12:21:51.106730+08:00", "role": "assistant", "text": "将时间轴从8条扩充到27条，覆盖前3100年美尼斯统一到2025年大埃及博物馆开放，涵盖古王国金字塔、新王国帝王谷、希腊化、伊斯兰、现代等全部关键节点。"}
+{"t": "2026-04-30T12:26:12.279209+08:00", "role": "user", "text": "你为什么没搜图"}
+{"t": "2026-04-30T12:26:12.279209+08:00", "role": "assistant", "text": "批量为全部24个实体搜索了Unsplash配图，写入每个entity的frontmatter（image/imageCredit/imageSource字段）。图片URL已验证可访问。"}
