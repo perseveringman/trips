@@ -668,3 +668,281 @@ body:has(.home-root) { overflow: auto; }
 .trip-card-subtitle { color: var(--muted); font-size: 13px; margin-bottom: 12px; line-height: 1.4; }
 .trip-card-stats    { display: flex; gap: 6px; font-size: 12px; color: var(--muted); flex-wrap: wrap; }
 .trip-card-meta     { font-size: 11px; color: var(--muted); margin-top: 8px; }
+
+/* ── Topbar compare link button ── */
+.compare-link-btn {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 12px; border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  font-size: 12px; color: var(--muted);
+  text-decoration: none; white-space: nowrap;
+  transition: all .15s ease;
+  flex-shrink: 0;
+}
+.compare-link-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* ========== Cross-Civilization Compare Timeline Page ========== */
+
+.compare-page {
+  display: flex; flex-direction: column;
+  height: 100vh; width: 100vw;
+  background: var(--bg); color: var(--text);
+  overflow: hidden;
+}
+
+/* ── Header ── */
+.compare-header {
+  display: flex; align-items: center; gap: 16px;
+  padding: 10px 18px; height: 48px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.compare-back {
+  font-size: 13px; color: var(--accent);
+  text-decoration: none; white-space: nowrap;
+}
+.compare-back:hover { text-decoration: underline; }
+.compare-title {
+  font-size: 16px; font-weight: 700; margin: 0;
+}
+
+/* ── Toolbar ── */
+.compare-toolbar {
+  display: flex; align-items: center; gap: 12px;
+  padding: 6px 18px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.compare-zoom {
+  display: flex; align-items: center; gap: 6px;
+  flex-shrink: 0;
+}
+.compare-zoom button {
+  width: 28px; height: 28px; border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  font-size: 16px; color: var(--text);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.compare-zoom button:hover { border-color: var(--accent); color: var(--accent); }
+.compare-zoom input[type="range"] {
+  width: 80px; accent-color: var(--accent);
+}
+.compare-zoom-label {
+  font-size: 11px; color: var(--muted);
+  font-family: ui-monospace, Menlo, monospace;
+  min-width: 32px;
+}
+.compare-period-nav {
+  display: flex; gap: 4px; flex-shrink: 0;
+}
+.compare-period-btn {
+  padding: 3px 8px; border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  font-size: 11px; color: var(--muted);
+  cursor: pointer; white-space: nowrap;
+  transition: all .12s ease;
+}
+.compare-period-btn:hover {
+  border-color: var(--accent); color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* ── Viewport ── */
+.compare-viewport {
+  flex: 1;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+}
+.compare-canvas {
+  position: relative;
+  min-height: 100%;
+}
+
+/* ── Period bands & boundary lines ── */
+.compare-bands {
+  position: absolute; top: 0; left: 0; bottom: 0;
+  pointer-events: none; z-index: 0;
+}
+.compare-band {
+  position: absolute; top: 0; bottom: 0;
+}
+.compare-band.even { background: rgba(128,128,128,0.04); }
+.compare-band.odd  { background: transparent; }
+.compare-band-label {
+  position: sticky; top: 4px;
+  display: inline-block;
+  padding: 1px 6px; border-radius: 4px;
+  font-size: 10px; color: var(--muted);
+  background: var(--panel); opacity: 0.8;
+  white-space: nowrap; pointer-events: none;
+}
+.compare-period-line {
+  position: absolute; top: 0; bottom: 0;
+  width: 0; border-left: 1px dashed var(--border);
+  pointer-events: none; z-index: 1;
+}
+
+/* ── Time ruler ── */
+.compare-ruler {
+  position: sticky; top: 0;
+  height: 36px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  z-index: 10;
+  margin-left: 100px; /* space for row labels */
+}
+.compare-tick {
+  position: absolute; top: 0; bottom: 0;
+}
+.compare-tick-line {
+  width: 0; height: 100%;
+  border-left: 1px solid var(--border);
+}
+.compare-tick-label {
+  position: absolute; bottom: 4px;
+  transform: translateX(-50%);
+  font-size: 10px; color: var(--muted);
+  font-family: ui-monospace, Menlo, monospace;
+  white-space: nowrap;
+}
+
+/* ── Civilization rows ── */
+.compare-rows {
+  position: relative; z-index: 2;
+}
+.compare-row {
+  display: flex; height: 56px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+.compare-row:last-child { border-bottom: none; }
+
+.compare-row-label {
+  position: sticky; left: 0;
+  width: 100px; min-width: 100px; flex-shrink: 0;
+  display: flex; align-items: center; gap: 4px;
+  padding: 0 10px;
+  background: var(--panel);
+  border-left: 3px solid;
+  border-right: 1px solid var(--border);
+  z-index: 5;
+  font-size: 12px; font-weight: 600;
+}
+.compare-row-emoji { font-size: 14px; }
+.compare-row-name  { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.compare-row-track {
+  position: relative; height: 100%;
+  flex-shrink: 0;
+}
+
+/* Civilization span bar (background) */
+.compare-span-bar {
+  position: absolute; top: 50%; height: 4px;
+  transform: translateY(-50%);
+  border-radius: 2px; opacity: 0.2;
+}
+
+/* ── Event dots ── */
+.compare-event-dot {
+  position: absolute; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px; height: 10px; border-radius: 50%;
+  border: 2px solid var(--panel);
+  cursor: pointer; z-index: 3;
+  padding: 0;
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.compare-event-dot:hover,
+.compare-event-dot.selected {
+  transform: translate(-50%, -50%) scale(1.6);
+  box-shadow: 0 0 0 3px rgba(0,0,0,.15);
+  z-index: 6;
+}
+.compare-event-dot.has-relation {
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+
+/* Tooltip */
+.compare-dot-tooltip {
+  display: none;
+  position: absolute; bottom: calc(100% + 8px);
+  left: 50%; transform: translateX(-50%);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 11px; line-height: 1.4;
+  color: var(--text);
+  white-space: nowrap;
+  box-shadow: var(--shadow-md);
+  pointer-events: none; z-index: 20;
+  max-width: 280px; white-space: normal;
+}
+.compare-event-dot:hover .compare-dot-tooltip {
+  display: block;
+}
+
+/* ── Event detail panel (bottom) ── */
+.compare-detail {
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+  padding: 10px 18px;
+  flex-shrink: 0;
+  animation: compare-slide-in .15s ease;
+}
+@keyframes compare-slide-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.compare-detail-head {
+  display: flex; align-items: baseline; gap: 8px;
+  flex-wrap: wrap;
+}
+.compare-detail-civ {
+  font-size: 13px; font-weight: 700;
+}
+.compare-detail-year {
+  font-size: 12px; font-weight: 600; color: var(--accent);
+  font-family: ui-monospace, Menlo, monospace;
+}
+.compare-detail-summary {
+  font-size: 13px; color: var(--text); flex: 1;
+}
+.compare-detail-close {
+  background: none; border: none; font-size: 18px;
+  color: var(--muted); cursor: pointer; padding: 0 2px;
+  line-height: 1; flex-shrink: 0;
+}
+.compare-detail-close:hover { color: var(--text); }
+.compare-detail-relation {
+  margin-top: 6px; font-size: 12px; color: var(--accent);
+  padding: 4px 8px; background: var(--accent-soft);
+  border-radius: 6px; line-height: 1.5;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .compare-header { padding: 8px 12px; height: 42px; gap: 10px; }
+  .compare-title  { font-size: 14px; }
+  .compare-toolbar { padding: 5px 12px; gap: 8px; }
+  .compare-row { height: 48px; }
+  .compare-row-label { width: 72px; min-width: 72px; padding: 0 6px; font-size: 11px; }
+  .compare-row-emoji { font-size: 12px; }
+  .compare-ruler { height: 30px; margin-left: 72px; }
+  .compare-event-dot { width: 8px; height: 8px; }
+  .compare-detail { padding: 8px 12px; }
+  .compare-zoom input[type="range"] { width: 60px; }
+}

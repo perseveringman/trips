@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import Home from "./Home";
+import CompareTimeline from "./pages/CompareTimeline";
 import { initStore } from "./store";
 import type { TripData } from "./lib/types";
 import "./index.css";
@@ -31,8 +32,16 @@ const EMPTY: TripData = {
 //    visibly.
 const inlined = window.__TRIP_DATA__;
 
-function parseHash(): { kind: "home" } | { kind: "trip"; slug: string } {
+type Route =
+  | { kind: "home" }
+  | { kind: "trip"; slug: string }
+  | { kind: "compare"; slug: string };
+
+function parseHash(): Route {
   const h = location.hash || "#/";
+  // compare must match before trip (more specific path)
+  const mc = h.match(/^#\/t\/([^/?]+)\/compare/);
+  if (mc) return { kind: "compare", slug: decodeURIComponent(mc[1]) };
   const m = h.match(/^#\/t\/([^/?]+)/);
   if (m) return { kind: "trip", slug: decodeURIComponent(m[1]) };
   return { kind: "home" };
@@ -53,9 +62,12 @@ function Router() {
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
 
+  const needsFetch = route.kind === "trip" || route.kind === "compare";
+  const slug = route.kind !== "home" ? route.slug : "";
+
   useEffect(() => {
-    if (route.kind !== "trip") return;
-    const url = `${import.meta.env.BASE_URL}trips/${encodeURIComponent(route.slug)}.json`;
+    if (!needsFetch) return;
+    const url = `${import.meta.env.BASE_URL}trips/${encodeURIComponent(slug)}.json`;
     fetch(url)
       .then((r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status} for ${url}`);
@@ -63,7 +75,7 @@ function Router() {
       })
       .then((d: TripData) => setData(d))
       .catch((e) => setError(String(e)));
-  }, [route]);
+  }, [needsFetch, slug]);
 
   if (route.kind === "home") return <Home />;
 
@@ -82,6 +94,10 @@ function Router() {
   }
   if (!data) {
     return <div className="home-root"><div className="home-card">加载中…</div></div>;
+  }
+
+  if (route.kind === "compare") {
+    return <CompareTimeline data={data} slug={slug} />;
   }
 
   const useStore = initStore(data);

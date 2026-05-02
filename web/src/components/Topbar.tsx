@@ -1,6 +1,11 @@
 import { useMemo, useState } from "react";
 import type { TripStore } from "../store";
 
+function currentSlug(): string {
+  const m = location.hash.match(/^#\/t\/([^/?]+)/);
+  return m ? decodeURIComponent(m[1]) : "egypt-2026-05";
+}
+
 export default function Topbar({ useStore, isMobile }:
   { useStore: TripStore; isMobile: boolean }) {
   const data = useStore((s) => s.data);
@@ -36,7 +41,14 @@ export default function Topbar({ useStore, isMobile }:
           {data.entities.filter((e) => e.coords).length} 地点
         </div>
       </div>
-      <div style={{ position: "relative", flex: 1, display: "flex", justifyContent: "flex-end" }}>
+      <div style={{ position: "relative", flex: 1, display: "flex", justifyContent: "flex-end", gap: 8 }}>
+        <a
+          className="compare-link-btn"
+          href={`#/t/${encodeURIComponent(currentSlug())}/compare`}
+          title="跨文明历史对比"
+        >
+          ⏳ {isMobile ? "" : "文明对比"}
+        </a>
         <input
           className="search"
           placeholder={isMobile ? "搜索实体" : "搜索实体 / 别名 / 标签..."}
