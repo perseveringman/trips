@@ -823,7 +823,7 @@ body:has(.home-root) { overflow: auto; }
   position: relative; z-index: 2;
 }
 .compare-row {
-  display: flex; height: 56px;
+  display: flex; height: 64px;
   border-bottom: 1px solid var(--border);
   position: relative;
 }
@@ -855,44 +855,53 @@ body:has(.home-root) { overflow: auto; }
   border-radius: 2px; opacity: 0.2;
 }
 
-/* ── Event dots ── */
-.compare-event-dot {
-  position: absolute; top: 50%;
-  transform: translate(-50%, -50%);
-  width: 10px; height: 10px; border-radius: 50%;
-  border: 2px solid var(--panel);
+/* ── Inline event markers (dot + small text on the track) ── */
+.compare-evt {
+  position: absolute; top: 0; bottom: 0;
+  transform: translateX(-50%);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
   cursor: pointer; z-index: 3;
-  padding: 0;
-  transition: transform .12s ease, box-shadow .12s ease;
+  gap: 1px;
 }
-.compare-event-dot:hover,
-.compare-event-dot.selected {
-  transform: translate(-50%, -50%) scale(1.6);
-  box-shadow: 0 0 0 3px rgba(0,0,0,.15);
-  z-index: 6;
+.compare-evt-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  border: 1.5px solid var(--panel);
+  flex-shrink: 0;
 }
-.compare-event-dot.has-relation {
+.compare-evt.selected .compare-evt-dot {
+  transform: scale(1.5);
+  box-shadow: 0 0 0 2px rgba(0,0,0,.15);
+}
+.compare-evt.has-relation .compare-evt-dot {
   box-shadow: 0 0 0 2px var(--accent-soft);
 }
-
-/* Tooltip */
-.compare-dot-tooltip {
-  display: none;
-  position: absolute; bottom: calc(100% + 8px);
-  left: 50%; transform: translateX(-50%);
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 6px 10px;
-  font-size: 11px; line-height: 1.4;
-  color: var(--text);
-  white-space: nowrap;
-  box-shadow: var(--shadow-md);
-  pointer-events: none; z-index: 20;
-  max-width: 280px; white-space: normal;
+/* Inline text labels above or below the dot */
+.compare-evt-text {
+  display: flex; gap: 2px; align-items: baseline;
+  white-space: nowrap; pointer-events: none;
+  max-width: 140px;
 }
-.compare-event-dot:hover .compare-dot-tooltip {
-  display: block;
+.compare-evt-text.above { order: -1; }
+.compare-evt-text.below { order: 1; }
+.compare-evt-year {
+  font-size: 8px; font-weight: 600; color: var(--muted);
+  font-family: ui-monospace, Menlo, monospace;
+  flex-shrink: 0;
+}
+.compare-evt-sum {
+  font-size: 8px; color: var(--text);
+  overflow: hidden; text-overflow: ellipsis;
+  opacity: 0.7;
+}
+.compare-evt:hover .compare-evt-sum,
+.compare-evt.selected .compare-evt-sum {
+  opacity: 1; font-weight: 500;
+}
+.compare-evt:hover .compare-evt-text,
+.compare-evt.selected .compare-evt-text {
+  max-width: 300px; z-index: 10; position: relative;
+  background: var(--panel); padding: 0 3px; border-radius: 2px;
 }
 
 /* ── Event detail panel (bottom) ── */
@@ -938,10 +947,14 @@ body:has(.home-root) { overflow: auto; }
   .compare-header { padding: 8px 12px; height: 42px; gap: 10px; }
   .compare-title  { font-size: 14px; }
   .compare-toolbar { padding: 5px 12px; gap: 8px; }
-  .compare-row { height: 48px; }
+  .compare-row { height: 56px; }
   .compare-row-label { width: 72px; min-width: 72px; padding: 0 6px; font-size: 11px; }
   .compare-row-emoji { font-size: 12px; }
   .compare-ruler { height: 30px; margin-left: 72px; }
+  .compare-evt-year { font-size: 7px; }
+  .compare-evt-sum  { font-size: 7px; }
+  .compare-evt-dot  { width: 6px; height: 6px; }
+  .compare-evt-text { max-width: 100px; }
   .compare-event-dot { width: 8px; height: 8px; }
   .compare-detail { padding: 8px 12px; }
   .compare-zoom input[type="range"] { width: 60px; }

@@ -199,20 +199,34 @@ function CivRow({
           const x = yearToX(ev.year);
           const isSelected =
             selectedEvent?.civId === civ.id && selectedEvent.year === ev.year;
+          // Alternate label above / below the line to reduce overlap
+          const above = i % 2 === 0;
           return (
-            <button
+            <div
               key={`${ev.year}-${i}`}
-              className={`compare-event-dot${isSelected ? " selected" : ""}${ev.relation ? " has-relation" : ""}`}
-              style={{ left: x, backgroundColor: civ.color }}
+              className={`compare-evt${isSelected ? " selected" : ""}${ev.relation ? " has-relation" : ""}`}
+              style={{ left: x }}
               onClick={() => onSelect(civ, ev)}
-              title={`${formatYear(ev.year)} — ${ev.summary}`}
             >
-              <span className="compare-dot-tooltip">
-                <strong>{formatYear(ev.year)}</strong>
-                <br />
-                {ev.summary}
-              </span>
-            </button>
+              {above && (
+                <span className="compare-evt-text above">
+                  <span className="compare-evt-year">{formatYearShort(ev.year)}</span>
+                  {" "}
+                  <span className="compare-evt-sum">{ev.summary}</span>
+                </span>
+              )}
+              <span
+                className="compare-evt-dot"
+                style={{ backgroundColor: civ.color }}
+              />
+              {!above && (
+                <span className="compare-evt-text below">
+                  <span className="compare-evt-year">{formatYearShort(ev.year)}</span>
+                  {" "}
+                  <span className="compare-evt-sum">{ev.summary}</span>
+                </span>
+              )}
+            </div>
           );
         })}
       </div>
