@@ -61,3 +61,97 @@ export function emojiSvgUrl(emoji: string, color: string, size = 32): string {
 }
 
 export const MOBILE_BREAKPOINT = 768;
+
+// ── 历史分期系统 ──
+
+import type { Entity, TripEvent } from "./types";
+
+export interface HistoricalPeriod {
+  id: string;
+  name: string;
+  emoji: string;
+  startYear: number; // 负数 = BC
+  endYear: number;
+}
+
+export const PERIODS: HistoricalPeriod[] = [
+  { id: "early",       name: "早王朝",     emoji: "🏺",  startYear: -3100, endYear: -2687 },
+  { id: "old-kingdom", name: "古王国",     emoji: "🔺",  startYear: -2686, endYear: -2181 },
+  { id: "fip",         name: "第一中间期", emoji: "⚡",  startYear: -2180, endYear: -2055 },
+  { id: "middle",      name: "中王国",     emoji: "⚖️",  startYear: -2054, endYear: -1650 },
+  { id: "sip",         name: "第二中间期", emoji: "🐴",  startYear: -1649, endYear: -1551 },
+  { id: "new-kingdom", name: "新王国",     emoji: "👑",  startYear: -1550, endYear: -1070 },
+  { id: "tip",         name: "第三中间期", emoji: "📜",  startYear: -1069, endYear: -664  },
+  { id: "late",        name: "后王国期",   emoji: "🦅",  startYear: -663,  endYear: -332  },
+  { id: "ptolemaic",   name: "托勒密",     emoji: "🏛️",  startYear: -331,  endYear: -31   },
+  { id: "roman",       name: "罗马时期",   emoji: "⚔️",  startYear: -30,   endYear: 640   },
+  { id: "islamic",     name: "伊斯兰",     emoji: "🕌",  startYear: 641,   endYear: 1797  },
+  { id: "modern",      name: "近现代",     emoji: "🏗️",  startYear: 1798,  endYear: 2100  },
+];
+
+export const DYNASTY_TO_PERIOD: Record<string, string> = {
+  "第一王朝": "early", "第二王朝": "early",
+  "第三王朝": "old-kingdom", "第四王朝": "old-kingdom",
+  "第五王朝": "old-kingdom", "第六王朝": "old-kingdom",
+  "第七王朝": "fip", "第八王朝": "fip",
+  "第九王朝": "fip", "第十王朝": "fip",
+  "第十一王朝": "middle", "第十二王朝": "middle",
+  "第十三王朝": "middle", "第十四王朝": "middle",
+  "第十五王朝": "sip", "第十六王朝": "sip", "第十七王朝": "sip",
+  "第十八王朝": "new-kingdom", "第十九王朝": "new-kingdom", "第二十王朝": "new-kingdom",
+  "第二十一王朝": "tip", "第二十二王朝": "tip", "第二十三王朝": "tip",
+  "第二十四王朝": "tip", "第二十五王朝": "tip",
+  "第二十六王朝": "late", "第二十七王朝": "late",
+  "第二十八王朝": "late", "第二十九王朝": "late", "第三十王朝": "late", "第三十一王朝": "late",
+  "托勒密王朝": "ptolemaic",
+};
+
+export const TAG_TO_PERIOD: Record<string, string> = {
+  "早王朝": "early",
+  "古王国": "old-kingdom",
+  "第一中间期": "fip",
+  "中王国": "middle",
+  "第二中间期": "sip",
+  "新王国": "new-kingdom",
+  "第三中间期": "tip",
+  "后王国期": "late", "晚期王朝": "late",
+  "托勒密": "ptolemaic", "托勒密时期": "ptolemaic",
+  "罗马时期": "roman", "罗马": "roman",
+  "伊斯兰": "islamic", "伊斯兰时期": "islamic",
+  "近现代": "modern", "现代": "modern",
+};
+
+/** 将年份映射到分期 id */
+export function yearToPeriod(y: number): string | null {
+  for (const p of PERIODS) {
+    if (y >= p.startYear && y <= p.endYear) return p.id;
+  }
+  return null;
+}
+
+/** 三级回退：dynasty → tags → 关联 event 最早年份 */
+export function entityToPeriod(entity: Entity, events: TripEvent[]): string | null {
+  // Level 1: dynasty 字段直接映射
+  if (entity.dynasty && DYNASTY_TO_PERIOD[entity.dynasty]) {
+    return DYNASTY_TO_PERIOD[entity.dynasty];
+  }
+  // Level 2: tags 关键词匹配
+  for (const tag of entity.tags) {
+    if (TAG_TO_PERIOD[tag]) return TAG_TO_PERIOD[tag];
+  }
+  // Level 3: 关联 event 的最早年份
+  const years: number[] = [];
+  for (const ev of events) {
+    if (ev.year != null && (ev.places.includes(entity.id) || ev.actors.includes(entity.id))) {
+      years.push(ev.year);
+    }
+  }
+  if (years.length) return yearToPeriod(Math.min(...years));
+  return null;
+}
+
+/** 事件按年份归期 */
+export function eventToPeriod(ev: TripEvent): string | null {
+  if (ev.year == null) return null;
+  return yearToPeriod(ev.year);
+}

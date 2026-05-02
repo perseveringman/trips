@@ -42,6 +42,8 @@ def _camel(entity_fm: dict, body: str, file: str) -> dict:
         "image": entity_fm.get("image"),
         "imageCredit": entity_fm.get("image_credit"),
         "imageSource": entity_fm.get("image_source"),
+        "dynasty": entity_fm.get("dynasty"),
+        "reign": entity_fm.get("reign"),
     }
 
 

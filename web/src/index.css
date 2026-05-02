@@ -333,10 +333,8 @@ a:hover { text-decoration: underline; }
   overflow: hidden;
 }
 .timeline.closed { height: 34px; }
-/* open/tall: use auto height so detail panel is not clipped */
-.timeline.open, .timeline.open.tall { height: auto; }
+.timeline.open { height: auto; }
 
-/* Mobile: timeline sits between topbar and stage */
 @media (max-width: 768px) {
   .timeline {
     border-top: none;
@@ -345,6 +343,7 @@ a:hover { text-decoration: underline; }
   }
 }
 
+/* ── Bar ── */
 .timeline .bar {
   display: flex; align-items: center; height: 34px;
   padding: 0 14px; font-size: 12px; color: var(--muted);
@@ -352,132 +351,155 @@ a:hover { text-decoration: underline; }
 }
 .timeline .bar .count { color: var(--text); font-weight: 600; }
 
-.timeline .track {
-  position: relative;
-  height: 62px;          /* fixed track height for dots */
-  padding: 6px 14px 10px;
-  overflow-x: auto;
-  overflow-y: hidden;
+/* ── Period pill track ── */
+.timeline .period-track {
+  display: flex; gap: 6px;
+  padding: 6px 14px 8px;
+  overflow-x: auto; overflow-y: hidden;
   white-space: nowrap;
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
 }
-@media (max-width: 768px) {
-  .timeline .track { height: 60px; padding: 4px 12px 6px; }
-}
-
-.timeline .axis {
-  position: relative; height: 100%; min-width: 100%;
-}
-.timeline .axis::before {
-  content: ""; position: absolute; left: 0; right: 0;
-  top: 50%; border-top: 1px dashed var(--border);
-}
-.timeline .dot {
-  position: absolute; transform: translate(-50%, -50%);
-  top: 50%;
-  width: 10px; height: 10px; border-radius: 50%;
-  background: var(--accent); border: 2px solid var(--panel);
-  cursor: pointer;
-}
-.timeline .dot.hit { background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
-.timeline .dot.active {
-  background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft);
-  transform: translate(-50%, -50%) scale(1.4);
-}
-.timeline .label {
-  position: absolute; transform: translate(-50%, 0);
-  top: calc(50% + 10px);
-  font-size: 11px; color: var(--muted); white-space: nowrap;
-  max-width: 140px; overflow: hidden; text-overflow: ellipsis;
-  pointer-events: none;
-}
-.timeline .year {
-  position: absolute; transform: translate(-50%, -100%);
-  top: calc(50% - 10px);
-  font-size: 10px; color: var(--muted);
-  font-family: ui-monospace, Menlo, monospace;
-  white-space: nowrap; pointer-events: none;
+.timeline .period-track::-webkit-scrollbar { height: 3px; }
+.timeline .period-track::-webkit-scrollbar-thumb {
+  background: var(--border); border-radius: 2px;
 }
 
-/* Mobile even-spaced axis */
-@media (max-width: 768px) {
-  .timeline .axis-even {
-    display: flex; position: relative; height: 100%;
-  }
-  .timeline .axis-even::before {
-    content: ""; position: absolute; left: 0; right: 0;
-    top: 50%; border-top: 1px dashed var(--border);
-  }
-  .timeline .evt-slot {
-    position: absolute; top: 0; bottom: 0; width: 140px;
-    display: flex; flex-direction: column; align-items: center;
-    justify-content: center; gap: 2px;
-  }
-  .timeline .evt-slot .year {
-    position: static; transform: none;
-    font-size: 10px; white-space: nowrap;
-  }
-  .timeline .evt-slot .dot {
-    position: static; transform: none;
-    width: 8px; height: 8px; flex-shrink: 0;
-  }
-  .timeline .evt-slot .dot.active {
-    transform: none; scale: 1.3;
-  }
-  .timeline .evt-slot .label {
-    position: static; transform: none;
-    font-size: 10px; max-width: 130px; text-align: center;
-  }
-}
-
-/* ── Inline event detail panel (below track, not inside it) ── */
-.timeline .evt-detail {
+.timeline .period-pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 10px; border-radius: 20px;
+  border: 1px solid var(--border);
   background: var(--panel-2);
-  border-top: 1px solid var(--border);
-  padding: 8px 14px 10px;
-  display: flex; flex-direction: column; gap: 6px;
-  animation: evt-slide-in .15s ease;
+  font-size: 12px; color: var(--muted);
+  cursor: pointer; white-space: nowrap;
+  transition: all .15s ease;
+  flex-shrink: 0;
 }
-@keyframes evt-slide-in {
+.timeline .period-pill:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+.timeline .period-pill.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+  font-weight: 600;
+}
+.timeline .period-pill.hit {
+  box-shadow: 0 0 0 2px var(--accent);
+}
+.timeline .pill-emoji { font-size: 13px; }
+.timeline .pill-name  { font-size: 12px; }
+.timeline .pill-count {
+  font-size: 11px; font-weight: 600;
+  background: var(--border);
+  border-radius: 10px; padding: 0 5px;
+  min-width: 18px; text-align: center;
+  color: var(--text);
+}
+.timeline .period-pill.active .pill-count {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* ── Period expanded panel ── */
+.timeline .period-panel {
+  border-top: 1px solid var(--border);
+  animation: panel-slide-in .15s ease;
+}
+@keyframes panel-slide-in {
   from { opacity: 0; transform: translateY(-4px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.timeline .evt-detail-head {
-  display: flex; align-items: baseline; gap: 8px;
+
+.timeline .period-panel-head {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 14px 4px;
+  border-bottom: 1px solid var(--border);
 }
-.timeline .evt-detail-year {
-  font-size: 12px; font-weight: 700; color: var(--accent);
+.timeline .period-panel-emoji { font-size: 14px; }
+.timeline .period-panel-name  {
+  font-size: 13px; font-weight: 600; color: var(--text);
+}
+.timeline .period-panel-range {
+  font-size: 11px; color: var(--muted);
   font-family: ui-monospace, Menlo, monospace;
-  flex-shrink: 0;
 }
-.timeline .evt-detail-summary {
-  font-size: 13px; color: var(--text); line-height: 1.4;
-  flex: 1; min-width: 0;
+.timeline .period-panel-close {
+  margin-left: auto; background: none; border: none;
+  font-size: 16px; color: var(--muted); cursor: pointer;
+  padding: 0 2px; line-height: 1;
 }
-.timeline .evt-detail-close {
-  background: none; border: none; font-size: 16px;
-  color: var(--muted); cursor: pointer; padding: 0 2px;
-  flex-shrink: 0; line-height: 1;
+.timeline .period-panel-close:hover { color: var(--text); }
+
+.timeline .period-panel-body {
+  padding: 8px 14px 10px;
+  max-height: 280px; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 8px;
+  scrollbar-width: thin;
 }
-.timeline .evt-detail-close:hover { color: var(--text); }
-.timeline .evt-detail-links {
-  display: flex; flex-wrap: wrap; gap: 6px;
+.timeline .period-panel-body.mobile { max-height: 200px; }
+.timeline .period-panel-body::-webkit-scrollbar { width: 4px; }
+.timeline .period-panel-body::-webkit-scrollbar-thumb {
+  background: var(--border); border-radius: 2px;
 }
-.timeline .evt-chip {
-  background: var(--panel);
+
+/* ── Event rows ── */
+.timeline .period-events {
+  display: flex; flex-direction: column; gap: 4px;
+}
+.timeline .period-evt-row {
+  display: flex; align-items: baseline; gap: 6px;
+  font-size: 12px; line-height: 1.5;
+}
+.timeline .evt-year {
+  font-size: 11px; font-weight: 600; color: var(--accent);
+  font-family: ui-monospace, Menlo, monospace;
+  white-space: nowrap; flex-shrink: 0;
+  min-width: 46px;
+}
+.timeline .evt-summary {
+  color: var(--text); flex: 1; min-width: 0;
+}
+.timeline .evt-inline-chips {
+  display: inline-flex; gap: 2px; flex-shrink: 0;
+}
+
+/* ── Entity chip grid ── */
+.timeline .period-entities {
+  display: flex; flex-wrap: wrap; gap: 5px;
+  padding-top: 4px;
+  border-top: 1px dashed var(--border);
+}
+.timeline .entity-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 9px; border-radius: 8px;
   border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 3px 10px;
-  font-size: 12px;
-  cursor: pointer;
-  white-space: nowrap;
+  background: var(--panel-2);
+  font-size: 12px; color: var(--muted);
+  cursor: pointer; white-space: nowrap;
+  transition: all .12s ease;
 }
-.timeline .evt-chip.place { color: var(--accent); }
-.timeline .evt-chip.actor { color: #6a7b8b; }
-.timeline .evt-chip:hover {
+.timeline .entity-chip:hover,
+.timeline .entity-chip.selected {
   background: var(--accent-soft);
   border-color: var(--accent);
   color: var(--accent);
+}
+/* mini chip (event inline) */
+.timeline .entity-chip.mini {
+  padding: 2px 5px; border-radius: 6px; font-size: 11px;
+}
+
+@media (max-width: 768px) {
+  .timeline .period-track { padding: 5px 10px 6px; gap: 5px; }
+  .timeline .period-pill  { padding: 3px 8px; font-size: 11px; }
+  .timeline .period-panel-body { max-height: 200px; padding: 6px 10px 8px; }
+  .timeline .period-panel-head { padding: 5px 10px 3px; }
+  .timeline .period-evt-row { font-size: 11px; }
+  .timeline .evt-year { font-size: 10px; min-width: 38px; }
+  .timeline .entity-chip { font-size: 11px; padding: 2px 7px; }
 }
 
 /* ---------- Anchor lines SVG ---------- */

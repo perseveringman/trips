@@ -24,6 +24,10 @@ export interface Entity {
   imageCredit: string | null;
   /** Source service, e.g. "unsplash". */
   imageSource: string | null;
+  /** 所属王朝，如 "第四王朝"、"第十八王朝" */
+  dynasty: string | null;
+  /** 统治年份，如 "BC 2589 – BC 2566" */
+  reign: string | null;
 }
 
 export interface TripEvent {
